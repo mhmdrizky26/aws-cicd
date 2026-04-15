@@ -1,35 +1,446 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD Data Pasien</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f0f4f8;
+            color: #1a1a2e;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #185FA5;
+            background: #E6F1FB;
+            padding: 4px 16px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0c1b33;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0c1b33;
+        }
+
+        .stat-lbl {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 90px 1.4fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .field label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .field input {
+            height: 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #f9fafb;
+            color: #111827;
+            padding: 0 12px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .field input:focus {
+            border-color: #378ADD;
+            box-shadow: 0 0 0 3px #E6F1FB;
+            background: #ffffff;
+        }
+
+        #btnSave {
+            height: 40px;
+            padding: 0 22px;
+            background: #185FA5;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        #btnSave:hover {
+            background: #0c447c;
+        }
+
+        #btnSave:active {
+            transform: scale(0.97);
+        }
+
+        #btnSave.edit-mode {
+            background: #3B6D11;
+        }
+
+        #btnSave.edit-mode:hover {
+            background: #27500A;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead tr {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        thead th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #9ca3af;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 13px 14px;
+            color: #111827;
+            vertical-align: middle;
+        }
+
+        .diagnosa-pill {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 3px 12px;
+            border-radius: 20px;
+            color: #185FA5;
+            background: #E6F1FB;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .btn-edit {
+            height: 30px;
+            padding: 0 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            background: transparent;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-edit:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .btn-hapus {
+            height: 30px;
+            padding: 0 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 8px;
+            border: 1px solid #fca5a5;
+            background: transparent;
+            color: #dc2626;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-hapus:hover {
+            background: #fef2f2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+        }
+
+        .empty-state .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            #btnSave {
+                grid-column: 1 / -1;
+            }
+
+            .stats {
+                gap: 8px;
+            }
+
+            .stat-num {
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<h1>Test AWS CI/CD Ubah Ga</h1>
-<h2>CRUD Data Pasien</h2>
+<div class="container">
 
-<form id="formPasien">
-    <input type="hidden" id="index">
-    <input type="text" id="nama" placeholder="Nama" required>
-    <input type="number" id="umur" placeholder="Umur" required>
-    <input type="text" id="diagnosa" placeholder="Diagnosa" required>
-    <button type="submit">Simpan</button>
-</form>
+    <div class="header">
+        <div class="badge">Sistem Informasi Kesehatan</div>
+        <h1>Manajemen Data Pasien</h1>
+        <p class="page-subtitle">Kelola informasi pasien dengan mudah dan efisien</p>
+    </div>
 
-<table border="1">
-    <thead>
-        <tr>
-            <th>Nama</th>
-            <th>Umur</th>
-            <th>Diagnosa</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody id="tabelPasien"></tbody>
-</table>
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-num" id="statTotal">0</div>
+            <div class="stat-lbl">Total Pasien</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num" id="statAvg">—</div>
+            <div class="stat-lbl">Rata-rata Umur</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num" id="statDiag">—</div>
+            <div class="stat-lbl">Diagnosa Unik</div>
+        </div>
+    </div>
 
-<script src="script.js"></script>
+    <div class="card">
+        <div class="card-label" id="formLabel">Tambah Pasien Baru</div>
+        <form id="formPasien" onsubmit="simpan(event)">
+            <input type="hidden" id="index">
+            <div class="form-grid">
+                <div class="field">
+                    <label for="nama">Nama Lengkap</label>
+                    <input type="text" id="nama" placeholder="Masukkan nama pasien" required>
+                </div>
+                <div class="field">
+                    <label for="umur">Umur</label>
+                    <input type="number" id="umur" placeholder="Thn" min="0" max="150" required>
+                </div>
+                <div class="field">
+                    <label for="diagnosa">Diagnosa</label>
+                    <input type="text" id="diagnosa" placeholder="Diagnosis medis" required>
+                </div>
+                <button type="submit" id="btnSave">Simpan</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div class="card-label">Daftar Pasien Terdaftar</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Umur</th>
+                    <th>Diagnosa</th>
+                    <th style="text-align:right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabelPasien"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    let data = [];
+
+    function updateStats() {
+        document.getElementById('statTotal').textContent = data.length;
+        if (data.length === 0) {
+            document.getElementById('statAvg').textContent = '—';
+            document.getElementById('statDiag').textContent = '—';
+            return;
+        }
+        let avg = Math.round(data.reduce((a, b) => a + parseInt(b.umur), 0) / data.length);
+        let uniq = new Set(data.map(p => p.diagnosa.toLowerCase())).size;
+        document.getElementById('statAvg').textContent = avg + ' thn';
+        document.getElementById('statDiag').textContent = uniq;
+    }
+
+    function render() {
+        let tb = document.getElementById('tabelPasien');
+        if (data.length === 0) {
+            tb.innerHTML = `<tr><td colspan="4">
+                <div class="empty-state">
+                    <div class="icon">📋</div>
+                    <div>Belum ada data pasien terdaftar</div>
+                </div>
+            </td></tr>`;
+            updateStats();
+            return;
+        }
+        tb.innerHTML = data.map((p, i) => `
+            <tr>
+                <td><strong style="font-weight:500">${p.nama}</strong></td>
+                <td style="color:#6b7280">${p.umur} thn</td>
+                <td><span class="diagnosa-pill">${p.diagnosa}</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-edit" onclick="edit(${i})">Edit</button>
+                        <button class="btn-hapus" onclick="hapus(${i})">Hapus</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        updateStats();
+    }
+
+    function simpan(e) {
+        e.preventDefault();
+        let n = document.getElementById('nama').value.trim();
+        let u = document.getElementById('umur').value.trim();
+        let d = document.getElementById('diagnosa').value.trim();
+        let idx = document.getElementById('index').value;
+
+        if (!n || !u || !d) return;
+
+        if (idx === '') {
+            data.push({ nama: n, umur: u, diagnosa: d });
+        } else {
+            data[parseInt(idx)] = { nama: n, umur: u, diagnosa: d };
+        }
+
+        resetForm();
+        render();
+    }
+
+    function edit(i) {
+        document.getElementById('nama').value = data[i].nama;
+        document.getElementById('umur').value = data[i].umur;
+        document.getElementById('diagnosa').value = data[i].diagnosa;
+        document.getElementById('index').value = i;
+        document.getElementById('formLabel').textContent = 'Edit Data Pasien';
+        document.getElementById('btnSave').textContent = 'Perbarui';
+        document.getElementById('btnSave').className = 'edit-mode';
+        document.getElementById('nama').focus();
+    }
+
+    function hapus(i) {
+        data.splice(i, 1);
+        render();
+    }
+
+    function resetForm() {
+        document.getElementById('nama').value = '';
+        document.getElementById('umur').value = '';
+        document.getElementById('diagnosa').value = '';
+        document.getElementById('index').value = '';
+        document.getElementById('formLabel').textContent = 'Tambah Pasien Baru';
+        document.getElementById('btnSave').textContent = 'Simpan';
+        document.getElementById('btnSave').className = '';
+    }
+
+    render();
+</script>
 
 </body>
 </html>
