@@ -1,0 +1,31 @@
+name: aws-cicd-deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add known hosts
+        run: |
+          ssh-keyscan -H 18.206.170.175 >> ~/.ssh/known_hosts
+
+      - name: Deploy ke EC2
+        run: |
+          ssh ubuntu@18.206.170.175 << 'EOF'
+          cd /var/www/aws-cicd
+          git pull origin main
+          sudo systemctl restart nginx
+          EOF
